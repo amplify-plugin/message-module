@@ -1,0 +1,32 @@
+{
+    "name": "amplify/message",
+    "description": "This is a message module for amplify",
+    "type": "library",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Hafijul Islam",
+            "email": "hafijul.islam@easyask.com",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ext-gd": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Amplify\\System\\Message\\": "./"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Amplify\\System\\Message\\MessageServiceProvider"
+            ],
+            "aliases": {
+                "Sayt": "Amplify\\System\\Message\\Facades\\Messenger"
+            }
+        }
+    }
+}

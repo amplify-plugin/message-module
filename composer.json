@@ -25,7 +25,7 @@
                 "Amplify\\System\\Message\\MessageServiceProvider"
             ],
             "aliases": {
-                "Sayt": "Amplify\\System\\Message\\Facades\\Messenger"
+                "Message": "Amplify\\System\\Message\\Facades\\Messenger"
             }
         }
     }

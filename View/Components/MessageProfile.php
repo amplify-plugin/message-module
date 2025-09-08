@@ -2,7 +2,7 @@
 
 namespace Amplify\System\Message\View\Components;
 
-use App\Models\Contact;
+use Amplify\System\Backend\Models\Contact;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;

@@ -4,7 +4,6 @@ namespace Amplify\System\Message;
 
 use Amplify\System\Message\Exceptions\MessengerException;
 use Amplify\System\Message\Interfaces\MessageableInterface;
-use Amplify\System\Message\Interfaces\MessageInterface;
 use Amplify\System\Message\Interfaces\MessageThreadInterface;
 use Amplify\System\Message\Interfaces\MessengerAttachment;
 use Illuminate\Http\UploadedFile;
@@ -18,7 +17,7 @@ class Messenger implements MessengerAttachment
     /**
      * Message sender.
      *
-     * @var \App\Models\User
+     * @var \Amplify\System\Backend\Models\User
      */
     protected $from;
 
@@ -75,7 +74,7 @@ class Messenger implements MessengerAttachment
     /**
      * Message sender.
      *
-     * @param \App\Models\User
+     * @param \Amplify\System\Backend\Models\User
      * @return $this
      */
     public function from(MessageableInterface $from)

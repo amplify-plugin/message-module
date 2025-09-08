@@ -2,9 +2,9 @@
 
 namespace Amplify\System\Message\Http\Controllers;
 
+use Amplify\System\Backend\Models\Customer;
+use Amplify\System\Backend\Models\User;
 use App\Http\Controllers\Controller;
-use App\Models\Customer;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -2,9 +2,9 @@
 
 namespace Amplify\System\Message\Models;
 
+use Amplify\System\Backend\Models\Contact;
+use Amplify\System\Backend\Models\User;
 use Amplify\System\Message\Interfaces\MessageThreadInterface;
-use App\Models\Contact;
-use App\Models\User;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;

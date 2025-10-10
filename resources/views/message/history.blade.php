@@ -77,7 +77,7 @@
         <form
             action="{{ $threadLink() }}"
             method="post" enctype="multipart/form-data">
-            <input type="hidden" name="as_customer" value="{{ $as_customer }}"/>
+            <input type="hidden" name="as_customer" value="{{ $asCustomer }}"/>
             @csrf
             @if ($thread)
                 @method("PUT")
@@ -169,7 +169,7 @@
         if (value.length > 0) {
             var url = ("{{ route('messages.recipients', '##') }}").replace("##", value).toString();
             $.get(url, {
-                'as_customer': '{{ $as_customer ? 'true' : 'false' }}'
+                'as_customer': '{{ $asCustomer ? 'true' : 'false' }}'
             }, function (response) {
                 // $('#send-msg').prop("disabled", false);
 

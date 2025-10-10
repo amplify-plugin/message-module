@@ -1,6 +1,6 @@
 <?php
 
-namespace Amplify\System\Message\View\Components;
+namespace Amplify\System\Message\Widgets;
 
 use Amplify\System\Backend\Models\Contact;
 use Illuminate\Contracts\Foundation\Application;
@@ -9,31 +9,24 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\View\Component;
 
-class MessageProfile extends Component
+class Profile extends Component
 {
-    private Collection $threads;
+    public Collection $threads;
 
     private $entries;
 
     private $currentThead;
 
     /**
-     * @var bool
-     */
-    private $asCustomer;
-
-    /**
      * Create a new component instance.
      */
-    public function __construct(bool $asCustomer = false, $threads = null, $current = null)
+    public function __construct(private bool $asCustomer = false, $threads = null, $current = null)
     {
         $this->entries = $threads;
 
         $this->threads = collect();
 
         $this->currentThead = $current;
-
-        $this->asCustomer = $asCustomer;
     }
 
     /**
@@ -45,10 +38,7 @@ class MessageProfile extends Component
     {
         $this->loadActiveThreads();
 
-        return view('message::message-profile', [
-            'threads' => $this->threads,
-            'as_customer' => $this->asCustomer,
-        ]);
+        return view('message::message.profile');
     }
 
     private function loadActiveThreads()

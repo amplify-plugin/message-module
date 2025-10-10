@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Amplify\\System\\Message\\": "./"
+            "Amplify\\System\\Message\\": "./src"
         }
     },
     "extra": {

@@ -5,8 +5,8 @@ namespace Amplify\System\Message;
 use Amplify\System\Message\Interfaces\MessageInterface;
 use Amplify\System\Message\Interfaces\MessageThreadInterface;
 use Amplify\System\Message\Interfaces\MessageThreadParticipantInterface;
-use Amplify\System\Message\View\Components\MessageHistory;
-use Amplify\System\Message\View\Components\MessageProfile;
+use Amplify\System\Message\Widgets\History;
+use Amplify\System\Message\Widgets\Profile;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,7 +19,7 @@ class MessageServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/Config/messenger.php', 'messenger');
+        $this->mergeConfigFrom(__DIR__.'/../config/messenger.php', 'messenger');
 
         $this->app->singleton('messenger', function () {
             return new Messenger;
@@ -29,8 +29,7 @@ class MessageServiceProvider extends ServiceProvider
         $this->app->bind(MessageThreadInterface::class, config('messenger.models.thread'));
         $this->app->bind(MessageThreadParticipantInterface::class, config('messenger.models.participant'));
 
-        $this->loadRoutesFrom(__DIR__.'/Routes/message.php');
-
+        $this->app->register(WidgetProvider::class);
     }
 
     /**
@@ -40,10 +39,9 @@ class MessageServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/View/Blades', 'message');
+        $this->loadRoutesFrom(__DIR__.'/../routes/message.php');
 
-        Blade::component('message-profile', MessageProfile::class);
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'message');
 
-        Blade::component('message-history', MessageHistory::class);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Amplify\System\Message\View\Components;
+namespace Amplify\System\Message\Widgets;
 
 use Amplify\System\Message\Models\MessageThread;
 use Illuminate\Contracts\Foundation\Application;
@@ -9,26 +9,22 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\View\Component;
 
-class MessageHistory extends Component
+class History extends Component
 {
     private ?MessageThread $currentThread;
 
-    private Collection $messages;
-
-    private bool $asCustomer;
+    public Collection $messages;
 
     /**
      * Create a new component instance.
      *
      * @param  null  $current
      */
-    public function __construct(bool $asCustomer = false, $current = null)
+    public function __construct(public bool $asCustomer = false, $current = null)
     {
         $this->messages = collect();
 
         $this->currentThread = $current;
-
-        $this->asCustomer = $asCustomer;
     }
 
     /**
@@ -42,10 +38,8 @@ class MessageHistory extends Component
 
         $this->loadThreadMessages();
 
-        return view('message::message-history', [
-            'as_customer' => $this->asCustomer ? 1 : 0,
+        return view('message::message.history', [
             'reader_user' => $reader,
-            'messages' => $this->messages,
             'thread' => $this->currentThread,
         ]);
     }

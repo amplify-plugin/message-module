@@ -298,7 +298,7 @@
                                 <small class="text-danger d-block mt-1 px-3">{{ $message }}</small>
                             @enderror
                             <div data-send-error class="text-danger small d-block mt-1 px-3"></div>
-                            <input type="file" name="attachment" class="chat-file-input" data-file-input tabindex="-1" aria-hidden="true">
+                            <input type="file" name="attachment" class="chat-file-input" data-file-input tabindex="-1" aria-hidden="true" accept="{{ \Amplify\System\Message\Http\Requests\MessageRequest::acceptAttribute() }}">
                         </form>
                     </footer>
                     <script>

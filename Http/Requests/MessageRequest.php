@@ -7,6 +7,21 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class MessageRequest extends FormRequest
 {
+    public const ATTACHMENT_MIMES = 'jpg,jpeg,png,gif,webp,pdf,doc,docx,txt,rtf,csv,xls,xlsx,ppt,pptx';
+
+    public static function acceptAttribute(): string
+    {
+        return '.'.str_replace(',', ',.', self::ATTACHMENT_MIMES);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function attachmentRules(): array
+    {
+        return ['required_without:msg', 'file', 'mimes:'.self::ATTACHMENT_MIMES, 'max:1000'];
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,7 +40,7 @@ class MessageRequest extends FormRequest
         $rules = [
             'as_customer' => 'required|boolean',
             'msg' => 'required_without:attachment|nullable|min:1',
-            'attachment' => 'required_without:msg|max:1000',
+            'attachment' => self::attachmentRules(),
         ];
 
         if ($this->method() == 'POST') {
@@ -34,5 +49,12 @@ class MessageRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'attachment.mimes' => 'Attach an image, PDF, Word, Excel, PowerPoint, CSV, or text file.',
+        ];
     }
 }

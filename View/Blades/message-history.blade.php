@@ -125,7 +125,7 @@
                 <div class="frontend-message-fileupload input-group clone-field">
                     <div class="custom-file">
                         <input type="file" class="form-control custom-file-input" oninput="checkTextArea();"
-                               name="attachment" id="attachments">
+                               name="attachment" id="attachments" accept="{{ \Amplify\System\Message\Http\Requests\MessageRequest::acceptAttribute() }}">
                         <label class="custom-file-label" for="upload-file">Choose file</label>
                     </div>
                 </div>

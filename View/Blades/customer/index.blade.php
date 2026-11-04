@@ -4,173 +4,17 @@
     $contact = customer(true);
 @endphp
 <div {!! $htmlAttributes !!}>
-    <style>
-        .customer-messages {
-            display: flex;
-            height: clamp(420px, calc(100vh - 220px), 720px);
-            min-height: 0;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .customer-messages__list {
-            width: 280px;
-            flex: 0 0 280px;
-            border-right: 1px solid #eaeaea;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-        .customer-messages__list h4 { font-size: 16px; }
-        .customer-messages__threads { flex: 1 1 auto; overflow-y: auto; min-height: 0; }
-        .customer-messages__thread {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            color: inherit;
-            text-decoration: none;
-            border-radius: 6px;
-            margin: 0 8px 4px;
-        }
-        .customer-messages__thread:hover { background: #efefef; text-decoration: none; color: inherit; }
-        .customer-messages__thread.is-active { background: #efefef; }
-        .customer-messages__thread.is-unread .customer-messages__name,
-        .customer-messages__thread.is-unread .customer-messages__preview { font-weight: 700; }
-        .customer-messages__avatar,
-        .customer-messages__bubble-avatar {
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; line-height: 1; flex-shrink: 0;
-        }
-        .customer-messages__avatar {
-            width: 46px; height: 46px; flex: 0 0 46px;
-            background: #dfe3ea; color: #1b2a4e; font-size: 14px;
-        }
-        .customer-messages__bubble-avatar {
-            width: 36px; height: 36px; margin-top: 4px; font-size: 12px; color: #fff;
-        }
-        .customer-messages__bubble-avatar.is-them { background: #6c757d; margin-right: 8px; }
-        .customer-messages__bubble-avatar.is-mine { background: #17a2b8; margin-left: 8px; }
-        .customer-messages__scroll p { text-align: left; }
-        .customer-messages__meta { min-width: 0; flex: 1 1 auto; }
-        .customer-messages__name {
-            font-size: 14px; line-height: 1.3; margin: 0; color: #212529;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .customer-messages__preview {
-            margin: 2px 0 0; color: #6c757d; font-size: 12px; line-height: 1.3;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .customer-messages__time { display: block; margin-top: 2px; color: #999; font-size: 11px; }
-        .customer-messages__time i { margin-right: 3px; }
-        .customer-messages__pane {
-            flex: 1 1 auto;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-        .customer-messages .chat-stage {
-            position: relative;
-            flex: 1 1 0%;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        .customer-messages__scroll {
-            flex: 1 1 0%;
-            height: 0;
-            min-height: 0;
-            overflow-y: auto;
-            overflow-anchor: none;
-            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
-        }
-        .customer-messages .chat-boot {
-            display: none;
-            position: absolute;
-            inset: 0;
-            z-index: 3;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
-            color: #C31E1E;
-        }
-        .customer-messages .chat-stage.is-loading .chat-boot { display: flex; }
-        .customer-messages .chat-booting > * { visibility: hidden; }
-        .customer-messages .chat-boot__spinner {
-            width: 28px;
-            height: 28px;
-            border: 3px solid rgba(195, 30, 30, 0.2);
-            border-top-color: currentColor;
-            border-radius: 50%;
-            animation: customer-chat-boot-spin .7s linear infinite;
-        }
-        @keyframes customer-chat-boot-spin { to { transform: rotate(360deg); } }
-        .customer-messages .ticket-composer { display: flex; align-items: center; gap: 12px; }
-        .customer-messages .ticket-composer__btn {
-            flex: 0 0 44px; width: 44px !important; height: 44px !important; margin: 0 !important;
-            padding: 0 !important; line-height: 1 !important; border-radius: 4px !important;
-        }
-        .customer-messages .ticket-composer .btn-primary:focus,
-        .customer-messages .ticket-composer .btn-primary:focus-visible,
-        .customer-messages .ticket-composer .btn-primary:active,
-        .customer-messages .ticket-composer .btn-primary:disabled,
-        .customer-messages .ticket-composer .btn-primary.disabled {
-            outline: none !important;
-            border-color: #C31E1E !important;
-            box-shadow: 0 0 0 0.2rem rgba(195, 30, 30, 0.35) !important;
-        }
-        .customer-messages textarea.ticket-composer__input {
-            flex: 1 1 auto; width: 100%; height: 44px !important; min-height: 44px !important; max-height: 44px !important;
-            margin: 0 !important; padding: 4px 14px !important; line-height: 16px !important; font-size: 14px !important;
-            border-radius: 4px !important; overflow-y: auto; resize: none; box-sizing: border-box;
-        }
-        .customer-messages .chat-file-input {
-            position: absolute !important; width: 1px !important; height: 1px !important;
-            padding: 0 !important; margin: -1px !important; overflow: hidden !important;
-            clip: rect(0,0,0,0) !important; border: 0 !important;
-        }
-        .customer-messages .message-file-pick {
-            display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
-            padding: 4px 6px 4px 4px; border: 1px solid #e4e6eb; border-radius: 10px; background: #f8f9fb;
-            max-width: 280px;
-        }
-        .customer-messages .message-file-pick img,
-        .customer-messages .message-file-pick__icon {
-            width: 36px; height: 36px; flex: 0 0 36px; border-radius: 6px; object-fit: cover;
-        }
-        .customer-messages .message-file-pick__icon {
-            display: inline-flex; align-items: center; justify-content: center;
-            background: #e6e9ef; color: #3d4d6a;
-        }
-        .customer-messages .message-file-pick__name {
-            display: block; max-width: 160px; overflow: hidden; text-overflow: ellipsis;
-            white-space: nowrap; font-size: 13px; font-weight: 600; color: #1b2a4e;
-        }
-        .customer-messages .message-file-pick__size { display: block; font-size: 11px; color: #6c757d; }
-        .customer-messages .message-file-pick img[hidden],
-        .customer-messages .message-file-pick__icon[hidden] { display: none !important; }
-        .customer-messages .chat-spinner {
-            width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35);
-            border-top-color: #fff; border-radius: 50%; display: inline-block;
-            animation: customer-message-spin .7s linear infinite;
-        }
-        .customer-messages .chat-spinner[hidden],
-        .customer-messages [data-send-icon][hidden] { display: none !important; }
-        @keyframes customer-message-spin { to { transform: rotate(360deg); } }
-        @media (max-width: 767.98px) {
-            .customer-messages { flex-direction: column; height: clamp(360px, calc(100vh - 160px), 640px); }
-            .customer-messages__list { width: 100%; flex-basis: auto; max-height: 220px; border-right: 0; border-bottom: 1px solid #eaeaea; }
-        }
-    </style>
-
     <div class="card border-0 shadow">
         <div class="customer-messages">
             <aside class="customer-messages__list"
                    data-recent-url="{{ route('frontend.messages.recent') }}"
                    data-active-thread="{{ $current->id ?? '' }}">
-                <h4 class="px-3 pt-3 mb-2">Messages</h4>
+                <div class="customer-messages__toolbar">
+                    <a href="{{ route('frontend.messages.index') }}" class="btn btn-primary customer-messages__new">
+                        <i class="fa fa-edit"></i> New message
+                    </a>
+                </div>
+                <h4 class="customer-messages__heading">Messages</h4>
                 <div class="customer-messages__threads">
                     @forelse ($threads as $thread)
                         @continue(! $thread->lastMessage)
@@ -285,7 +129,7 @@
                                 <button type="button" class="btn btn-light d-flex align-items-center justify-content-center ticket-composer__btn" data-file-open aria-label="Attach a file">
                                     <i class="fa fa-paperclip text-muted"></i>
                                 </button>
-                                <textarea name="msg" class="form-control border ticket-composer__input" rows="1" placeholder="Type your message...">{{ old('msg') }}</textarea>
+                                <textarea name="msg" class="form-control border ticket-composer__input" rows="1" placeholder="Enter text here...">{{ old('msg') }}</textarea>
                                 <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center ticket-composer__btn" data-send aria-label="Send">
                                     <i class="fa fa-paper-plane" data-send-icon></i>
                                     <span class="chat-spinner" data-send-spinner hidden></span>
@@ -476,12 +320,297 @@
                         })();
                     </script>
                 @else
-                    <div class="d-flex flex-column align-items-center justify-content-center text-muted h-100 py-5">
-                        <div class="mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0,0,0,0.05);">
-                            <i class="fa fa-comments" style="font-size: 32px; opacity: 0.5;"></i>
-                        </div>
-                        <p class="mb-0">{{ $threads->isEmpty() ? 'No messages yet' : 'Select a message' }}</p>
-                    </div>
+                    <form class="customer-messages__compose"
+                          action="{{ route('frontend.messages.store') }}"
+                          method="post"
+                          enctype="multipart/form-data"
+                          data-recipients-user="{{ route('frontend.messages.recipients', ['type' => 'user']) }}"
+                          data-recipients-contact="{{ route('frontend.messages.recipients', ['type' => 'contact']) }}">
+                        @csrf
+                        <input type="hidden" name="as_customer" value="1">
+                        <header class="px-4 py-3 border-bottom bg-white">
+                            <h6 class="mb-0 font-weight-bold text-dark">New message</h6>
+                        </header>
+                        <div class="customer-messages__compose-body"></div>
+                        <footer class="border-top bg-white p-3">
+                            <div class="customer-messages__compose-fields">
+                                <div class="customer-messages__field">
+                                    <label for="customer-message-user-type">User type<span class="text-danger">*</span></label>
+                                    <select name="user_type" id="customer-message-user-type" class="form-control" data-user-type>
+                                        <option value="">Select one</option>
+                                        <option value="user" @selected(old('user_type') === 'user')>Admin</option>
+                                        <option value="contact" @selected(old('user_type') === 'contact')>Contact</option>
+                                    </select>
+                                    @error('user_type')
+                                        <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                                <div class="customer-messages__field customer-messages__field--to">
+                                    <label for="customer-message-recipient">Message to<span class="text-danger">*</span></label>
+                                    <div class="customer-messages__recipient">
+                                        <input type="text" id="customer-message-recipient" class="form-control" data-recipient-search placeholder="Select user type first" autocomplete="off" disabled>
+                                        <input type="hidden" name="msg_to" value="{{ old('msg_to') }}" data-recipient-id>
+                                        <div class="customer-messages__recipient-results" data-recipient-results hidden></div>
+                                    </div>
+                                    @error('msg_to')
+                                        <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            <small class="text-muted d-block customer-messages__hint">Admins are internal users. Contacts are people on your account.</small>
+                            <div class="message-file-pick" data-file-chip hidden>
+                                <img data-file-preview alt="" hidden>
+                                <span class="message-file-pick__icon" data-file-icon><i class="fa fa-file-alt"></i></span>
+                                <span>
+                                    <span class="message-file-pick__name" data-file-name></span>
+                                    <span class="message-file-pick__size" data-file-size></span>
+                                </span>
+                                <button type="button" class="btn btn-link btn-sm text-muted p-0 ml-auto" data-file-clear aria-label="Remove file">&times;</button>
+                            </div>
+                            <div class="ticket-composer">
+                                <button type="button" class="btn btn-light d-flex align-items-center justify-content-center ticket-composer__btn" data-file-open aria-label="Attach a file">
+                                    <i class="fa fa-paperclip text-muted"></i>
+                                </button>
+                                <textarea name="msg" class="form-control border ticket-composer__input" rows="1" placeholder="Enter text here...">{{ old('msg') }}</textarea>
+                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center ticket-composer__btn" data-send disabled aria-label="Send">
+                                    <i class="fa fa-paper-plane" data-send-icon></i>
+                                    <span class="chat-spinner" data-send-spinner hidden></span>
+                                </button>
+                            </div>
+                            @error('msg')
+                                <small class="text-danger d-block mt-1">{{ $message }}</small>
+                            @enderror
+                            @error('attachment')
+                                <small class="text-danger d-block mt-1">{{ $message }}</small>
+                            @enderror
+                            <input type="file" name="attachment" class="chat-file-input" data-file-input tabindex="-1" aria-hidden="true" accept="{{ \Amplify\System\Message\Http\Requests\MessageRequest::acceptAttribute() }}">
+                        </footer>
+                    </form>
+                    <script>
+                        (function () {
+                            var form = document.querySelector('.customer-messages__compose');
+                            if (!form) {
+                                return;
+                            }
+                            var type = form.querySelector('[data-user-type]');
+                            var search = form.querySelector('[data-recipient-search]');
+                            var hidden = form.querySelector('[data-recipient-id]');
+                            var results = form.querySelector('[data-recipient-results]');
+                            var input = form.querySelector('[data-file-input]');
+                            var open = form.querySelector('[data-file-open]');
+                            var chip = form.querySelector('[data-file-chip]');
+                            var name = form.querySelector('[data-file-name]');
+                            var size = form.querySelector('[data-file-size]');
+                            var preview = form.querySelector('[data-file-preview]');
+                            var fileIcon = form.querySelector('[data-file-icon]');
+                            var clear = form.querySelector('[data-file-clear]');
+                            var text = form.querySelector('[name="msg"]');
+                            var send = form.querySelector('[data-send]');
+                            var sendIcon = form.querySelector('[data-send-icon]');
+                            var spinner = form.querySelector('[data-send-spinner]');
+                            var choices = [];
+                            var previewUrl = '';
+                            var selectedId = hidden ? hidden.value : '';
+
+                            function fileSize(bytes) {
+                                if (bytes < 1024) {
+                                    return bytes + ' B';
+                                }
+                                if (bytes < 1048576) {
+                                    return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+                                }
+                                return (bytes / 1048576).toFixed(1) + ' MB';
+                            }
+
+                            function clearPreview() {
+                                if (previewUrl) {
+                                    URL.revokeObjectURL(previewUrl);
+                                    previewUrl = '';
+                                }
+                                preview.hidden = true;
+                                preview.removeAttribute('src');
+                                fileIcon.hidden = false;
+                            }
+
+                            function refreshSend() {
+                                var hasBody = (text && text.value.trim() !== '') || (input.files && input.files.length > 0);
+                                var hasRecipient = hidden && hidden.value.trim() !== '' && type && type.value.trim() !== '';
+                                send.disabled = form.dataset.sending === '1' || !hasBody || !hasRecipient;
+                            }
+
+                            function showNote(message) {
+                                results.hidden = false;
+                                results.innerHTML = '';
+                                var note = document.createElement('div');
+                                note.className = 'customer-messages__recipient-empty';
+                                note.textContent = message;
+                                results.appendChild(note);
+                            }
+
+                            function renderChoices(items) {
+                                results.innerHTML = '';
+                                if (!items.length) {
+                                    showNote('No matches');
+                                    return;
+                                }
+                                items.forEach(function (item) {
+                                    var button = document.createElement('button');
+                                    button.type = 'button';
+                                    button.textContent = item.text;
+                                    button.addEventListener('click', function () {
+                                        hidden.value = String(item.id);
+                                        search.value = item.text;
+                                        results.hidden = true;
+                                        refreshSend();
+                                    });
+                                    results.appendChild(button);
+                                });
+                                results.hidden = false;
+                            }
+
+                            function filteredChoices() {
+                                var term = search.value.trim().toLowerCase();
+                                if (!term) {
+                                    return choices;
+                                }
+                                return choices.filter(function (item) {
+                                    return String(item.text || '').toLowerCase().indexOf(term) !== -1;
+                                });
+                            }
+
+                            function loadRecipients(kind, done) {
+                                var url = kind === 'contact' ? form.getAttribute('data-recipients-contact') : form.getAttribute('data-recipients-user');
+                                choices = [];
+                                search.disabled = true;
+                                search.placeholder = 'Loading...';
+                                fetch(url, {
+                                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                                    credentials: 'same-origin'
+                                }).then(function (response) {
+                                    if (!response.ok) {
+                                        throw new Error('recipients failed');
+                                    }
+                                    return response.json();
+                                }).then(function (data) {
+                                    if (type.value !== kind) {
+                                        return;
+                                    }
+                                    choices = (data && data.results) || [];
+                                    search.disabled = false;
+                                    search.placeholder = kind === 'contact' ? 'Search contacts on your account' : 'Search admins';
+                                    if (done) {
+                                        done();
+                                    }
+                                }).catch(function () {
+                                    if (type.value !== kind) {
+                                        return;
+                                    }
+                                    search.disabled = false;
+                                    search.placeholder = 'Could not load names';
+                                    showNote('Could not load names');
+                                });
+                            }
+
+                            type.addEventListener('change', function () {
+                                hidden.value = '';
+                                search.value = '';
+                                results.hidden = true;
+                                choices = [];
+                                refreshSend();
+                                if (!type.value) {
+                                    search.disabled = true;
+                                    search.placeholder = 'Select user type first';
+                                    return;
+                                }
+                                loadRecipients(type.value);
+                            });
+
+                            search.addEventListener('input', function () {
+                                if (hidden.value) {
+                                    hidden.value = '';
+                                    refreshSend();
+                                }
+                                if (!type.value) {
+                                    return;
+                                }
+                                renderChoices(filteredChoices());
+                            });
+                            search.addEventListener('focus', function () {
+                                if (type.value && !search.disabled) {
+                                    renderChoices(filteredChoices());
+                                }
+                            });
+                            document.addEventListener('click', function (event) {
+                                if (!form.contains(event.target)) {
+                                    results.hidden = true;
+                                }
+                            });
+
+                            open.addEventListener('click', function () {
+                                input.click();
+                            });
+                            input.addEventListener('change', function () {
+                                var file = input.files && input.files[0];
+                                clearPreview();
+                                if (!file) {
+                                    chip.hidden = true;
+                                    name.textContent = '';
+                                    size.textContent = '';
+                                    refreshSend();
+                                    return;
+                                }
+                                chip.hidden = false;
+                                name.textContent = file.name;
+                                size.textContent = fileSize(file.size);
+                                if (file.type && file.type.indexOf('image/') === 0) {
+                                    previewUrl = URL.createObjectURL(file);
+                                    preview.src = previewUrl;
+                                    preview.hidden = false;
+                                    fileIcon.hidden = true;
+                                }
+                                refreshSend();
+                            });
+                            clear.addEventListener('click', function () {
+                                input.value = '';
+                                chip.hidden = true;
+                                name.textContent = '';
+                                size.textContent = '';
+                                clearPreview();
+                                refreshSend();
+                            });
+                            text.addEventListener('input', refreshSend);
+
+                            form.addEventListener('submit', function (event) {
+                                refreshSend();
+                                if (send.disabled || form.dataset.sending === '1') {
+                                    event.preventDefault();
+                                    return;
+                                }
+                                form.dataset.sending = '1';
+                                send.disabled = true;
+                                if (sendIcon) {
+                                    sendIcon.hidden = true;
+                                }
+                                if (spinner) {
+                                    spinner.hidden = false;
+                                }
+                            });
+
+                            if (type.value) {
+                                loadRecipients(type.value, function () {
+                                    var match = choices.find(function (item) {
+                                        return String(item.id) === String(selectedId);
+                                    });
+                                    if (match) {
+                                        hidden.value = String(match.id);
+                                        search.value = match.text;
+                                    }
+                                    refreshSend();
+                                });
+                            }
+                            refreshSend();
+                        })();
+                    </script>
                 @endif
             </section>
         </div>

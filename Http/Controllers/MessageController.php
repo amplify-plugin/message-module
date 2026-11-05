@@ -11,6 +11,7 @@ use Amplify\System\Message\Models\Message;
 use Amplify\System\Message\Models\MessageThread;
 use ErrorException;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -18,6 +19,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
+use Illuminate\Validation\ValidationException;
 
 class MessageController extends Controller
 {
@@ -42,21 +44,10 @@ class MessageController extends Controller
 
     public function store(MessageRequest $request): Redirector|Application|RedirectResponse
     {
-        if (! customer(true)->can('message.messaging')) {
-            abort(403);
-        }
+        $sender = $this->messagingContact();
+        $receiver = $this->composeReceiver($sender, (string) $request->user_type, (int) $request->msg_to);
+
         try {
-            switch ($request->user_type) {
-                case 'user':
-                    $receiver = User::findOrFail($request->msg_to);
-                    break;
-                case 'contact':
-                    $receiver = Contact::findOrFail($request->msg_to);
-                    break;
-            }
-
-            $sender = ($request->boolean('as_customer')) ? customer(true) : backpack_user();
-
             $attachmentTitle = null;
 
             if ($request->hasFile('attachment')) {
@@ -71,15 +62,17 @@ class MessageController extends Controller
                 ->attachment($request->file('attachment'))
                 ->send();
 
-            ($message instanceof Message)
-                ? \Alert::success('Message Send Successfully')
-                : \Alert::error('Something went wrong');
+            if (! $message instanceof Message) {
+                \Alert::error('Something went wrong');
 
-            $url = ($request->boolean('as_customer')) ? route('frontend.messages.show', $message->thread_id) : backpack_url('message', $message->thread_id);
+                return redirect()->back()->with('error', 'Something went wrong');
+            }
 
-            return ($message instanceof Message)
-                ? redirect($url)
-                : redirect()->back()->with('error', 'Something went wrong');
+            \Alert::success('Message Send Successfully');
+
+            return redirect(route('frontend.messages.show', $message->thread_id));
+        } catch (ValidationException $exception) {
+            throw $exception;
         } catch (\Exception $exception) {
             \Alert::error($exception->getMessage());
 
@@ -132,6 +125,37 @@ class MessageController extends Controller
         }
 
         return back();
+    }
+
+    public function recipients(Request $request, string $type): JsonResponse
+    {
+        $contact = $this->messagingContact();
+        $term = trim(str_replace(['%', '_'], '', (string) $request->query('q', '')));
+        $like = $term === '' ? null : '%'.$term.'%';
+
+        if ($type === 'user') {
+            $results = $this->contactableAdmins()
+                ->when($like, fn ($query) => $query->where('name', 'like', $like))
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->map(fn (User $user) => [
+                    'id' => (int) $user->id,
+                    'text' => (string) $user->name,
+                ])
+                ->values();
+        } else {
+            $results = $contact->contacts()
+                ->when($like, fn ($query) => $query->where('name', 'like', $like))
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->map(fn (Contact $item) => [
+                    'id' => (int) $item->id,
+                    'text' => (string) $item->name,
+                ])
+                ->values();
+        }
+
+        return response()->json(['results' => $results])->header('Cache-Control', 'no-store');
     }
 
     public function recent(): JsonResponse
@@ -190,6 +214,16 @@ class MessageController extends Controller
         ])->header('Cache-Control', 'no-store');
     }
 
+    private function contactableAdmins(): Builder
+    {
+        $configured = config('amplify.frontend.customer_message_admin_ids', []);
+        $ids = is_array($configured)
+            ? array_values(array_unique(array_filter(array_map('intval', $configured))))
+            : [];
+
+        return User::query()->when($ids !== [], fn ($query) => $query->whereIn('id', $ids));
+    }
+
     private function messagingContact(): Contact
     {
         $contact = customer(true);
@@ -199,6 +233,29 @@ class MessageController extends Controller
         }
 
         return $contact;
+    }
+
+    private function composeReceiver(Contact $sender, string $type, int $recipientId): User|Contact
+    {
+        if ($type === 'user') {
+            $user = $this->contactableAdmins()->find($recipientId);
+
+            if ($user instanceof User) {
+                return $user;
+            }
+        }
+
+        if ($type === 'contact') {
+            $contact = $sender->contacts()->whereKey($recipientId)->first();
+
+            if ($contact instanceof Contact) {
+                return $contact;
+            }
+        }
+
+        throw ValidationException::withMessages([
+            'msg_to' => 'Choose an admin or a contact on your account.',
+        ]);
     }
 
     private function readableThread(Contact $contact, int $threadId): MessageThread

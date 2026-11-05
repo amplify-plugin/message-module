@@ -21,6 +21,10 @@ Route::name('frontend.')
         Route::get('messages/recent', [MessageController::class, 'recent'])
             ->middleware('throttle:60,1')
             ->name('messages.recent');
+        Route::get('messages/compose-recipients/{type}', [MessageController::class, 'recipients'])
+            ->middleware('throttle:60,1')
+            ->name('messages.recipients')
+            ->where(['type' => 'user|contact']);
         Route::get('messages/{message}/live', [MessageController::class, 'live'])
             ->middleware('throttle:60,1')
             ->name('messages.live')

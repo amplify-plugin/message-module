@@ -45,7 +45,7 @@ class MessageRequest extends FormRequest
 
         if ($this->method() == 'POST') {
             $rules['msg_to'] = 'required|integer';
-            $rules['user_type'] = 'nullable|in:user,contact';
+            $rules['user_type'] = 'required|in:user,contact';
         }
 
         return $rules;
